@@ -1,0 +1,307 @@
+//----------------------------------------------------------------------- timer0 port GPB8
+void InitTIMER0(void) {
+	/* Step 1. Enable and Select Timer clock source */          
+	SYSCLK->CLKSEL1.TMR0_S = 0;	// Select 12Mhz for Timer0 clock source
+	// 0 = 12 MHz, 1 = 32 kHz, 2 = HCLK, 7 = 22.1184 MHz
+  SYSCLK->APBCLK.TMR0_EN = 1;	// Enable Timer0 clock source
+
+	/* Step 2. Select Operation mode */	
+	TIMER0->TCSR.MODE = 1;				// 1 -> Select periodic mode
+	// 0 = One shot, 1 = Periodic, 2 = Toggle, 3 = continuous counting mode
+	
+	/* Step 3. Select Time out period 
+	= (Period of timer clock input) * (8-bit Prescale + 1) * (24-bit TCMP)*/
+	TIMER0->TCSR.PRESCALE = 11;	// Set Prescale [0~255]
+	TIMER0->TCMPR = 300000;		// Set TCMPR [0~16777215]
+	// (1/12000000)*(11+1)*(300000)= 0.3 sec
+
+	/* Step 4. Enable interrupt */
+	TIMER0->TCSR.IE = 1;
+	TIMER0->TISR.TIF = 1;				// Write 1 to clear the interrupt flag 		
+	NVIC_EnableIRQ(TMR0_IRQn);	// Enable Timer0 Interrupt
+
+	/* Step 5. Enable Timer module */
+	TIMER0->TCSR.CRST = 1;			// Reset up counter
+	TIMER0->TCSR.CEN = 1;				// Enable Timer0
+	}
+
+
+
+//----------------------------------------------------------------------- timer1 port GPB9
+void InitTIMER1(void) {
+	/* Step 1. Enable and Select Timer clock source */          
+	SYSCLK->CLKSEL1.TMR1_S = 0;	// Select 12Mhz for Timer0 clock source
+	// 0 = 12 MHz, 1 = 32 kHz, 2 = HCLK, 7 = 22.1184 MHz
+	SYSCLK->APBCLK.TMR1_EN = 1;	// Enable Timer0 clock source
+
+	/* Step 2. Select Operation mode */	
+	TIMER1->TCSR.MODE = 1;				// 1 -> Select periodic mode
+	// 0 = One shot, 1 = Periodic, 2 = Toggle, 3 = continuous counting mode
+	
+	/* Step 3. Select Time out period 
+	= (Period of timer clock input) * (8-bit Prescale + 1) * (24-bit TCMP)*/
+	TIMER1->TCSR.PRESCALE = 11;	// Set Prescale [0~255]
+	TIMER1->TCMPR = 1000000;		// Set TCMPR [0~16777215]
+	// (1/12000000)*(11+1)*(1000000)= 1 sec or 1 Hz
+
+	/* Step 4. Enable interrupt */
+	TIMER1->TCSR.IE = 1;
+	TIMER1->TISR.TIF = 1;				// Write 1 to clear the interrupt flag 		
+	NVIC_EnableIRQ(TMR1_IRQn);	// Enable Timer0 Interrupt
+
+	/* Step 5. Enable Timer module */
+	TIMER1->TCSR.CRST = 1;			// Reset up counter
+	TIMER1->TCSR.CEN = 1;				// Enable Timer0
+	}
+	//----------------------------------------------------------------------- timer2 port GPB10
+void InitTIMER2(void) {
+	/* Step 1. Enable and Select Timer clock source */          
+	SYSCLK->CLKSEL1.TMR2_S = 0;	// Select 12Mhz for Timer0 clock source
+	// 0 = 12 MHz, 1 = 32 kHz, 2 = HCLK, 7 = 22.1184 MHz
+	SYSCLK->APBCLK.TMR2_EN = 1;	// Enable Timer0 clock source
+
+	/* Step 2. Select Operation mode */	
+	TIMER2->TCSR.MODE = 1;				// 1 -> Select periodic mode
+	// 0 = One shot, 1 = Periodic, 2 = Toggle, 3 = continuous counting mode
+	
+	/* Step 3. Select Time out period 
+	= (Period of timer clock input) * (8-bit Prescale + 1) * (24-bit TCMP)*/
+	TIMER2->TCSR.PRESCALE = 11;	// Set Prescale [0~255]
+	TIMER2->TCMPR = 1000000;		// Set TCMPR [0~16777215]
+	// (1/12000000)*(11+1)*(1000000)= 1 sec or 1 Hz
+
+	/* Step 4. Enable interrupt */
+	TIMER2->TCSR.IE = 1;
+	TIMER2->TISR.TIF = 1;				// Write 1 to clear the interrupt flag 		
+	NVIC_EnableIRQ(TMR2_IRQn);	// Enable Timer0 Interrupt
+
+	/* Step 5. Enable Timer module */
+	TIMER2->TCSR.CRST = 1;			// Reset up counter
+	TIMER2->TCSR.CEN = 1;				// Enable Timer0
+	}
+	//----------------------------------------------------------------------- timer3 port GPB11
+	void InitTIMER3(void) {
+	/* Step 1. Enable and Select Timer clock source */          
+	SYSCLK->CLKSEL1.TMR3_S = 0;	// Select 12Mhz for Timer0 clock source
+	// 0 = 12 MHz, 1 = 32 kHz, 2 = HCLK, 7 = 22.1184 MHz
+	SYSCLK->APBCLK.TMR3_EN = 1;	// Enable Timer0 clock source
+
+	/* Step 2. Select Operation mode */	
+	TIMER3->TCSR.MODE = 1;				// 1 -> Select periodic mode
+	// 0 = One shot, 1 = Periodic, 2 = Toggle, 3 = continuous counting mode
+	
+	/* Step 3. Select Time out period 
+	= (Period of timer clock input) * (8-bit Prescale + 1) * (24-bit TCMP)*/
+	TIMER3->TCSR.PRESCALE = 11;	// Set Prescale [0~255]
+	TIMER3->TCMPR = 1000000;		// Set TCMPR [0~16777215]
+	// (1/12000000)*(11+1)*(1000000)= 1 sec or 1 Hz
+
+	/* Step 4. Enable interrupt */
+	TIMER3->TCSR.IE = 1;
+	TIMER3->TISR.TIF = 1;				// Write 1 to clear the interrupt flag 		
+	NVIC_EnableIRQ(TMR3_IRQn);	// Enable Timer0 Interrupt
+
+	/* Step 5. Enable Timer module */
+	TIMER3->TCSR.CRST = 1;			// Reset up counter
+	TIMER3->TCSR.CEN = 1;				// Enable Timer0
+	}
+	//----------------------------------------------------------------------- PWM0 port gpa 12
+	void InitPWM0(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPAMFP.PWM0_AD13 = 1;		// System Manager Control Registers
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM01_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL1.PWM01_S = 0;	// Select 12MHz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMA->PPR.CP01 = 11;	// Prescaler 0~255, Setting 0 to stop output clock
+	PWMA->CSR.CSR0 = 3;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(11+1)*(16)*(2^16)] = 0.95367 Hz -> T = 1.048576 ~ 262+786
+
+	/* Step 3. Select PWM Operation mode */
+	PWMA->PCR.CH1MOD = 1;		// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMA->CNR0 = 0xFFFF;
+	PWMA->CMR0 = 0x3FFF;
+	// CMR < CNR:	PWM low width = (CNR-CMR) unit [one PWM clock cycle]
+	//						PWM high width = (CMR+1) unit 
+
+	PWMA->PCR.CH0INV = 0;	// Inverter -> 0:off, 1:on
+	PWMA->PCR.CH0EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMA->POE.PWM0 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
+	//----------------------------------------------------------------------- PWM1 port gpa 13
+	void InitPWM1(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPAMFP.PWM1_AD14 = 1;		// System Manager Control Registers
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM01_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL1.PWM01_S = 0;	// Select 12MHz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMA->PPR.CP01 = 11;	// Prescaler 0~255, Setting 0 to stop output clock
+	PWMA->CSR.CSR1 = 3;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(11+1)*(16)*(2^16)] = 0.95367 Hz -> T = 1.048576 ~ 262+786
+
+	/* Step 3. Select PWM Operation mode */
+	PWMA->PCR.CH1MOD = 1;		// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMA->CNR1 = 0xFFFF;
+	PWMA->CMR1 = 0x3FFF;
+	// CMR < CNR:	PWM low width = (CNR-CMR) unit [one PWM clock cycle]
+	//						PWM high width = (CMR+1) unit 
+
+	PWMA->PCR.CH1INV = 0;	// Inverter -> 0:off, 1:on
+	PWMA->PCR.CH1EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMA->POE.PWM1 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
+//----------------------------------------------------------------------- PWM2 port gpa 14
+void InitPWM2(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPAMFP.PWM2_AD15 = 1;		// System Manager Control Registers
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM23_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL1.PWM23_S = 0;	// Select 12Mhz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMA->PPR.CP23 = 1;		// Prescaler 0~255, Setting 0 to stop output clock
+	PWMA->CSR.CSR2 = 4;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(1+1)*(1)*(8191)] = 732.5 Hz -> T = 1365 micros. ~ 682+682
+	
+	/* Step 3. Select PWM Operation mode */
+	PWMA->PCR.CH2MOD = 1;	// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMA->CNR2 = 0x1FFF;	// 0x1FFF = 8191
+	PWMA->CMR2 = 0x0FFF;
+
+	PWMA->PCR.CH2INV = 0;	// Inverter -> 0:off, 1:on
+	PWMA->PCR.CH2EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMA->POE.PWM2 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
+//----------------------------------------------------------------------- PWM3 port gpa 15
+	void InitPWM3(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPAMFP.PWM3_I2SMCLK = 1;		// System Manager Control Registers
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM23_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL1.PWM23_S = 0;	// Select 12Mhz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMA->PPR.CP23 = 1;		// Prescaler 0~255, Setting 0 to stop output clock
+	PWMA->CSR.CSR3 = 4;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(1+1)*(1)*(8191)] = 732.5 Hz -> T = 1365 micros. ~ 682+682
+	
+	/* Step 3. Select PWM Operation mode */
+	PWMA->PCR.CH3MOD = 1;	// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMA->CNR3 = 0x1FFF;	// 0x1FFF = 8191
+	PWMA->CMR3 = 0x0FFF;
+
+	PWMA->PCR.CH3INV = 0;	// Inverter -> 0:off, 1:on
+	PWMA->PCR.CH3EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMA->POE.PWM3 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
+	//----------------------------------------------------------------------- PWM4 port gpb 11
+	void InitPWM4(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPBMFP.TM3_PWM4 = 1;		// System Manager Control Registers
+	SYS->ALTMFP.PB11_PWM4 = 1;
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM45_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL2.PWM45_S = 0;	// Select 12Mhz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMB->PPR.CP01 = 1;		// Prescaler 0~255, Setting 0 to stop output clock
+	PWMB->CSR.CSR0 = 4;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(1+1)*(1)*(8191)] = 732.5 Hz -> T = 1365 micros. ~ 682+682
+	
+	/* Step 3. Select PWM Operation mode */
+	PWMB->PCR.CH0MOD = 1;	// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMB->CNR0 = 0x1FFF;	// 0x1FFF = 8191
+	PWMB->CMR0 = 0x0FFF;
+
+	PWMB->PCR.CH0INV = 0;	// Inverter -> 0:off, 1:on
+	PWMB->PCR.CH0EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMB->POE.PWM0 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
+	
+  //----------------------------------------------------------------------- PWM5 port gpE 5
+	void InitPWM5(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPEMFP.PWM5 = 1;		// System Manager Control Registers
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM45_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL2.PWM45_S = 0;	// Select 12Mhz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMB->PPR.CP01 = 1;		// Prescaler 0~255, Setting 0 to stop output clock
+	PWMB->CSR.CSR1 = 4;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(1+1)*(1)*(8191)] = 732.5 Hz -> T = 1365 micros. ~ 682+682
+	
+	/* Step 3. Select PWM Operation mode */
+	PWMB->PCR.CH1MOD = 1;	// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMB->CNR1 = 0x1FFF;	// 0x1FFF = 8191
+	PWMB->CMR1 = 0x0FFF;
+
+	PWMB->PCR.CH1INV = 0;	// Inverter -> 0:off, 1:on
+	PWMB->PCR.CH1EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMB->POE.PWM1 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
+	
+	//----------------------------------------------------------------------- PWM6 port gpE 0
+	void InitPWM6(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPEMFP.PWM6 = 1;		// System Manager Control Registers
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM67_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL2.PWM67_S = 0;	// Select 12Mhz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMB->PPR.CP23 = 1;		// Prescaler 0~255, Setting 0 to stop output clock
+	PWMB->CSR.CSR2 = 4;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(1+1)*(1)*(8191)] = 732.5 Hz -> T = 1365 micros. ~ 682+682
+	
+	/* Step 3. Select PWM Operation mode */
+	PWMB->PCR.CH2MOD = 1;	// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMB->CNR2 = 0x1FFF;	// 0x1FFF = 8191
+	PWMB->CMR2 = 0x0FFF;
+
+	PWMB->PCR.CH2INV = 0;	// Inverter -> 0:off, 1:on
+	PWMB->PCR.CH2EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMB->POE.PWM2 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
+	
+	//----------------------------------------------------------------------- PWM7 port gpE 1
+	void InitPWM7(void) {
+ 	/* Step 1. GPIO initial */ 
+	SYS->GPEMFP.PWM7 = 1;		// System Manager Control Registers
+	
+	/* Step 2. Enable and Select PWM clock source*/		
+	SYSCLK->APBCLK.PWM67_EN = 1;	// Enable PWM clock
+	SYSCLK->CLKSEL2.PWM67_S = 0;	// Select 12Mhz for PWM clock source
+	// 0:12MHz, 1:32.768 kHz, 2:HCLK, 3:22.1184 MHz 
+	PWMB->PPR.CP23 = 1;		// Prescaler 0~255, Setting 0 to stop output clock
+	PWMB->CSR.CSR3 = 4;		// clock divider ->	0:/2, 1:/4, 2:/8, 3:/16, 4:/1
+	// PWM frequency = PWMxy_CLK/[(prescale+1)*(clock divider)*(CNR+1)]
+	// Ex:= 12M/[(1+1)*(1)*(8191)] = 732.5 Hz -> T = 1365 micros. ~ 682+682
+	
+	/* Step 3. Select PWM Operation mode */
+	PWMB->PCR.CH3MOD = 1;	// 0:One-shot mode, 1:Auto-load mode
+	// CNR and CMR will be auto-cleared after setting CH0MOD form 0 to 1.
+	PWMB->CNR3 = 0x1FFF;	// 0x1FFF = 8191
+	PWMB->CMR3 = 0x0FFF;
+
+	PWMB->PCR.CH3INV = 0;	// Inverter -> 0:off, 1:on
+	PWMB->PCR.CH3EN = 1;	// PWM function -> 0:Disable, 1:Enable
+ 	PWMB->POE.PWM3 = 1;		// Output to pin -> 0:Diasble, 1:Enable
+	}
