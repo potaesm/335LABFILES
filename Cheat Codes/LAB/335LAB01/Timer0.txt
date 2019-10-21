@@ -1,0 +1,208 @@
+// Nu_LB-002: L01_04_Timer_WDT.c
+// timer up every 1 second
+
+/*--------------------------------------------------------------------------*/
+/*                                                                          */
+/* Copyright (c) Nuvoton Technology Corp. All rights reserved.              */
+/* edited: june 2014: dejwoot.kha@mail.kmutt.ac.th                          */
+/*--------------------------------------------------------------------------*/
+
+#include <stdio.h>	
+#include <string.h>																										 
+#include "NUC1xx.h"
+#include "LCD_Driver.h"
+#include "DrvSYS.h"
+#include "Seven_Segment.h"
+#include "scankey.h"
+#include "Driver\DrvGPIO.h"
+#include "Driver\DrvSYS.h"
+
+#define DELAY300ms	300000 // The maximal delay time is 335000 us.
+#define scanDelay 4000
+
+static uint16_t Timer0Counter = 0;
+int32_t i = 0;
+int8_t state = 0;
+
+// display an integer on four 7-segment LEDs
+void seg_display(int16_t value) {
+	int8_t digit;
+	digit = value / 1000;
+	close_seven_segment();
+	show_seven_segment(3,digit);
+	DrvSYS_Delay(scanDelay);
+		
+	value = value - digit * 1000;
+	digit = value / 100;
+	close_seven_segment();
+	show_seven_segment(2,digit);
+	DrvSYS_Delay(scanDelay);
+	}
+
+//-----------------------------------------------------------------------WDT
+void InitWDT(void) {
+	UNLOCKREG();		
+	/* Step 1. Enable and Select WDT clock source */         
+	SYSCLK->CLKSEL1.WDT_S = 3;	// Select 10kHz for WDT clock source  	
+	SYSCLK->APBCLK.WDT_EN = 1;	// Enable WDT clock source	
+
+	/* Step 2. Select Timeout Interval */
+	WDT->WTCR.WTIS = 6;					// 2^16 * (1/10k) = 6.5536 sec.
+	// 2^16 * (1/32.768k) = 6.5536 sec.
+	/* Step 3. Disable Watchdog Timer Reset function */
+	WDT->WTCR.WTRE = 0;
+
+	/* Step 4. Enable WDT interrupt */	
+	WDT->WTCR.WTIF = 1;					// Write 1 to clear flag	
+	WDT->WTCR.WTIE = 1;
+	NVIC_EnableIRQ(WDT_IRQn);
+
+	/* Step 5. Enable WDT module */
+	WDT->WTCR.WTE = 1;				// Enable WDT
+	WDT->WTCR.WTR = 1;					// Clear WDT counter
+	LOCKREG();
+	}
+	
+void StopWDT(void) {
+	UNLOCKREG();
+	WDT->WTCR.WTE = 0;				// Enable WDT
+	WDT->WTCR.WTR = 1;					// Clear WDT counter
+	LOCKREG();
+	}
+	
+void ResumeWDT(void) {
+	UNLOCKREG();		
+	WDT->WTCR.WTE = 1;				// Enable WDT
+	WDT->WTCR.WTR = 0;					// Clear WDT counter
+	LOCKREG();
+	}
+	
+void WDT_IRQHandler(void) {
+	UNLOCKREG();
+	WDT->WTCR.WTIF = 1;
+	WDT->WTCR.WTR = 1;
+	UNLOCKREG();
+	print_lcd(3, "WDT interrupt");
+	}
+
+//---------------------------------------------------------------------TIMER
+void InitTIMER0(void) {
+	/* Step 0. GPIO initial */
+	SYS->GPBMFP.TM0 = 1;				// System Manager Control Registers
+	
+	/* Step 1. Enable and Select Timer clock source */          
+	SYSCLK->CLKSEL1.TMR0_S = 0;	// Select 12Mhz for Timer0 clock source
+	// 0 = 12 MHz, 1 = 32 kHz, 2 = HCLK, 7 = 22.1184 MHz
+	SYSCLK->APBCLK.TMR0_EN = 1;	// Enable Timer0 clock source
+
+	/* Step 2. Select Operation mode */	
+	TIMER0->TCSR.MODE = 2;			// 2 -> Select Toggle mode
+	// 0 = One shot, 1 = Periodic, 2 = Toggle, 3 = continuous counting mode
+	
+	/* Step 3. Select Time out period 
+	= (Period of timer clock input) * (8-bit Prescale + 1) * (24-bit TCMP)*/
+	TIMER0->TCSR.PRESCALE = 11;	// Set Prescale [0~255]
+	TIMER0->TCMPR = 1000000;		// Set TCMPR [0~16777215]
+	// (1/12000000)*(11+1)*(1000000)= 1 sec or 1 Hz
+
+	/* Step 4. Enable interrupt */
+	TIMER0->TCSR.IE = 1;
+	TIMER0->TISR.TIF = 1;				// Write 1 to clear the interrupt flag 		
+	NVIC_EnableIRQ(TMR0_IRQn);	// Enable Timer0 Interrupt
+
+	/* Step 5. Enable Timer module */
+	TIMER0->TCSR.CRST = 1;			// Reset up counter
+	TIMER0->TCSR.CEN = 1;				// Enable Timer0
+	}
+
+void TMR0_IRQHandler(void) {	// Timer0 interrupt subroutine 
+	char lcd2_buffer[18] = "Timer0:";
+	Timer0Counter += 1;
+	sprintf(lcd2_buffer+7, " %d s.", Timer0Counter);
+	print_lcd(2, lcd2_buffer);
+ 	TIMER0->TISR.TIF = 1;    		// Write 1 to clear the interrupt flag 
+	}
+
+void Delay(uint32_t counter) {
+	while(counter--);
+	}
+
+void countUp() {
+	i = i + 100;						// increment i
+	if (i == 100000) i = 0;
+	}
+	
+void countDown() {
+	i = i - 100;						// increment i
+	if (i == 0) i = 100000;
+	}
+	
+void EINT1Callback(void) {
+	UNLOCKREG();
+	WDT->WTCR.WTIS = 7;
+	LOCKREG();
+	state = 2;
+	print_lcd(3, "               ");
+	print_lcd(3, "WDT Change!");
+	}
+
+//----------------------------------------------------------------------MAIN
+int32_t main (void) {
+	
+	int8_t number;
+	OpenKeyPad();
+	
+	/* Configure general GPIO interrupt */
+	DrvGPIO_Open(E_GPB, 15, E_IO_INPUT);
+
+	/* Configure external interrupt */
+	DrvGPIO_EnableEINT1(E_IO_BOTH_EDGE, E_MODE_EDGE, EINT1Callback);
+	
+
+		UNLOCKREG();
+		SYSCLK->PWRCON.XTL12M_EN = 1;
+		SYSCLK->CLKSEL0.HCLK_S = 0;
+		LOCKREG();
+		Initial_pannel();  // call initial pannel function
+		clr_all_pannal();
+		InitTIMER0();
+		InitWDT();
+		
+		
+		while(1) {
+		// __NOP();
+			number = Scankey();
+		
+		if (number == 1) {
+			print_lcd(3, "               ");
+			print_lcd(0, "               ");
+			print_lcd(0, "Stop!");
+			StopWDT();
+			}
+		if (number == 2) {
+			print_lcd(3, "               ");
+			print_lcd(0, "               ");
+			print_lcd(0, "Resume!");
+			ResumeWDT();
+			}
+		if (number == 3) {
+				state = 1;
+			}
+		if (state == 1) {
+				seg_display(i/10);	// display i on 7-segment display
+				countUp();
+			}         
+		if ((GPIOB->PIN &= 0x8000) == 0) {
+			}
+		if (state == 2) {
+				seg_display(i/10);	// display i on 7-segment display
+				countDown();
+			}
+		if (number == 4) {
+				state = 3;
+			}
+		if (state == 3) {
+				seg_display(i/10);	// display i on 7-segment display
+			}
+		}
+	}
